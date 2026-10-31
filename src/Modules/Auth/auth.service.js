@@ -27,7 +27,7 @@ import {
   getRedis,
   setRedis,
 } from "../../common/Services/redis.service.js";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 import { emitter } from "../../common/Services/email.service.js";
 import crypto from "node:crypto";
 /**
