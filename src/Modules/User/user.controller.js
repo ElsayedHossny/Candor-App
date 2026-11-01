@@ -4,7 +4,7 @@ import { authentication } from "../../Middleware/authentication.middleware.js";
 import { authorization } from "../../Middleware/authorization.middleware.js";
 import { roleEnum } from "../../common/constants.js";
 import { multerUpload } from "../../Middleware/multer.middleware.js";
-import { multerValidation } from "../../Middleware/MulterValidation.middleware.js";
+import { multerValidation } from "../../Middleware/multerValidation.middleware.js";
 
 const userRouter = Router();
 
@@ -87,6 +87,7 @@ userRouter.post(
   multerValidation,
   async (req, res, next) => {
     const files = req.files ?? req.file;
+    console.log(files);
 
     res.json({
       message: "uploaded sucessfully",

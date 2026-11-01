@@ -4,6 +4,22 @@ import { normalizedExt } from "../common/constants.js";
 import fs from "node:fs";
 
 export const multerValidation = async (req, res, next) => {
+  const files = normalizeFilesOutput(req);
+  for (const field in files) {
+    //files[field] array
+    await Promise.all(
+      files[field].map(async (file) => {
+        const resFile = await FileChecking(file);
+        file.validate = resFile;
+      }),
+    );
+  }
+  // req.zazaza = arr;
+  next();
+};
+
+const normalizeFilesOutput = (req) => {
+  // out :: obj of arr of obj (same field)
   let files = req.files ?? [req.file];
   if (!files) {
     throw new BadRequestException("No file was uploaded.", {
@@ -14,7 +30,7 @@ export const multerValidation = async (req, res, next) => {
     });
   }
 
-  // not use it because all js is Object typeof files == "array"
+  // (typeof files == "array") not use it because all js is Object
   if (Array.isArray(files)) {
     const z = files[0].fieldname;
     const x = {
@@ -22,54 +38,41 @@ export const multerValidation = async (req, res, next) => {
     };
     files = x;
   }
-  // const arr = [];
+  return files;
+};
+const FileChecking = async (file) => {
+  let { ext: originExt, mime: originMime } = await fileTypeFromFile(file.path);
+  let storedExt = file.originalname.split(".").pop().toLowerCase();
+  let storedMime = file.mimetype;
+  // normalizedExt because jpeg the origin EXT is jpg only
+  let normalizedStoredExt = normalizedExt[storedExt] ?? storedExt;
 
-  for (const field in files) {
-    //files[field] array
-    await Promise.all(
-      files[field].map(async (file) => {
-        let { ext: originExt, mime: originMime } = await fileTypeFromFile(
-          file.path,
-        );
-        let storedExt = file.originalname.split(".").pop().toLowerCase();
-        let storedMime = file.mimetype;
-        // normalizedExt because jpeg the origin EXT is jpg only
-        let normalizedStoredExt = normalizedExt[storedExt] ?? storedExt;
+  if (storedMime !== originMime || normalizedStoredExt !== originExt) {
+    fs.unlinkSync(file.path);
 
-        if (storedMime !== originMime || normalizedStoredExt !== originExt) {
-          fs.unlinkSync(file.path);
-
-          throw new BadRequestException("Invalid file type.", {
-            field: file.fieldname,
-            code: "FILE_TYPE_MISMATCH",
-            message:
-              "The file extension or MIME type does not match the actual file content.",
-            details: {
-              received: {
-                extension: storedExt,
-                mimeType: storedMime,
-              },
-              detected: {
-                extension: originExt,
-                mimeType: originMime,
-              },
-            },
-            suggestion:
-              "Please upload a valid file with a matching extension and content type.",
-          });
-        }
-
-        // let ovv = { normalizedStoredExt, storedMime };
-        // console.log(ovv);
-        file.validate = { normalizedStoredExt, storedMime };
-        // arr.push(ovv);
-      }),
-    );
+    throw new BadRequestException("Invalid file type.", {
+      field: file.fieldname,
+      code: "FILE_TYPE_MISMATCH",
+      message:
+        "The file extension or MIME type does not match the actual file content.",
+      details: {
+        received: {
+          extension: storedExt,
+          mimeType: storedMime,
+        },
+        detected: {
+          extension: originExt,
+          mimeType: originMime,
+        },
+      },
+      suggestion:
+        "Please upload a valid file with a matching extension and content type.",
+    });
   }
-
-  // req.zazaza = arr;
-
-  next();
+  // let ovv = { normalizedStoredExt, storedMime };
+  // console.log(ovv);
+  return { StoredExt: normalizedStoredExt, storedMime };
+  // arr.push(ovv);
 };
 
 /** 

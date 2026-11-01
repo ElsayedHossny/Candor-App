@@ -27,7 +27,7 @@ EmailConnection();
 //   next();
 // },
 
-app.use(cors(), helmet(), limiter(RATE_LIMIT_CONFIG.login), express.json());
+app.use(cors(), helmet(), limiter(RATE_LIMIT_CONFIG.global), express.json());
 
 app.get("/", (req, res) => {
   console.log({ req: req.rateLimit });
@@ -45,10 +45,11 @@ app.use("/api/message", messageRouter);
 app.use((req, res) => {
   res.status(404).json({ message: "Router Not Found" });
 });
+
 // handle Error
 app.use(globalErrorHandler);
-// Server Connect
 
+// Server Connect
 console.log("PORT:", process.env.PORT);
 
 const server = app.listen(process.env.PORT, () => {
