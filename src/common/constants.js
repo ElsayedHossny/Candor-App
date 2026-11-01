@@ -18,6 +18,7 @@ export const allowedExtensions = {
   vedio: ["mp4"],
   application: ["pdf", "xlxs"],
 };
+
 export const normalizedExt = {
   jpeg: "jpg",
   jpe: "jpg",
