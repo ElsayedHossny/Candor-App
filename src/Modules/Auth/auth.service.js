@@ -1,4 +1,6 @@
 import UserRepository from "../../DB/Repositories/user.repository.js";
+import crypto from "node:crypto";
+
 import {
   compareTwoHashs_argon2,
   compareTwoHashsBcrypt,
@@ -9,6 +11,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  NotFoundException,
   UnauthorizedException,
 } from "../../common/Utils/Error/exception.error.js";
 import {
@@ -19,8 +22,13 @@ import { envConfig } from "../../Config/env.config.js";
 import {
   generateSecretAndExpiresInToken,
   generateToken,
+  VerifyGoogleToken,
 } from "../../common/Utils/token.utils.js";
-import { roleEnum, TokenTypeEnum } from "../../common/constants.js";
+import {
+  providersEnum,
+  roleEnum,
+  TokenTypeEnum,
+} from "../../common/constants.js";
 import {
   calculationTTL,
   delRedis,
@@ -29,16 +37,6 @@ import {
 } from "../../common/Services/redis.service.js";
 import { v4 as uuid } from "uuid";
 import { emitter } from "../../common/Services/email.service.js";
-import crypto from "node:crypto";
-/**
-find 
-findById
-findOne 
-
-create 
-insertMany
-save 'objectId' new instance from userModel
- */
 
 const authRepo = new UserRepository();
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt;
@@ -64,7 +62,7 @@ const baseCheckLogin = async (body) => {
 
   return isExist;
 };
-////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 export const registerUser = async (body) => {
   const { firstName, lastName, email, password, gender, age, phone, role } =
@@ -86,17 +84,17 @@ export const registerUser = async (body) => {
   //sending otp
   const OTP = crypto.randomInt(100000, 1000000).toString();
 
-  emitter.emit("sendingOTP-Event", email, OTP);
-
   const hashOTP = await hashBcrypt(OTP, 10);
-
   await setRedis({
     key: `email_verification:${email}`,
     value: hashOTP,
     options: { EX: 300 },
   });
 
+  emitter.emit("sendingOTP-Event", email, OTP);
+
   /////////////////////
+
   return authRepo.createOneDocument({
     firstName,
     lastName,
@@ -214,7 +212,6 @@ export const resetPassword = async (email, otp, password) => {
 //////////////////////////////////////////////////////////////////////////////////////
 
 //// reset OTP
-
 export const resetOTP = async (email) => {
   const isExist = await authRepo.findOneDocument({ email });
   if (!isExist) {
@@ -226,7 +223,6 @@ export const resetOTP = async (email) => {
   await generatedAndSetOTPInRedis(email);
 };
 
-//////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 export const LoginAdminUser = async (body) => {
   const result = await baseCheckLogin(body);
@@ -325,34 +321,8 @@ export const userLoginOnly = async (body) => {
     });
   }
   // generate token
-  const token = generateToken(
-    {
-      _id: result._id,
-      email: result.email,
-      role: result.role,
-    },
-    userEnvConfig.access_token_secret,
-    {
-      expiresIn: userEnvConfig.access_token_expires_in,
-      jwtid: uuid(),
-    },
-  );
 
-  // console.log(token);
-
-  // generate refresh token
-  const refreshToken = generateToken(
-    {
-      _id: result._id,
-      email: result.email,
-      role: result.role,
-    },
-    userEnvConfig.refresh_token_secret,
-    {
-      expiresIn: userEnvConfig.refresh_token_expires_in,
-    },
-  );
-  return { result, token, refreshToken };
+  return buildToken(result);
 };
 
 export const adminLoginOnly = async (body) => {
@@ -404,4 +374,126 @@ export const sendEmailverify = async () => {
     "<h1>HellokcxljcnvscthyjkhAN</h1>",
   );
   return res;
+};
+////////////////////////////////////////////////////////////////////////////////
+const buildToken = (user) => {
+  // generate token to User Account Only
+  const token = generateToken(
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    },
+    userEnvConfig.access_token_secret,
+    {
+      expiresIn: userEnvConfig.access_token_expires_in,
+      jwtid: uuid(),
+    },
+  );
+
+  const refreshToken = generateToken(
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    },
+    userEnvConfig.refresh_token_secret,
+    {
+      expiresIn: userEnvConfig.refresh_token_expires_in,
+    },
+  );
+  return { accessToken: token, refreshToken };
+};
+
+const updateOrcreateUser = async (user, googleTokenPayload) => {
+  const {
+    given_name: firstName,
+    family_name: lastName,
+    email,
+    picture: profilePicture,
+    sub: googleSub,
+  } = googleTokenPayload;
+
+  const passwordDummy = crypto.randomBytes(12).toString("hex");
+
+  if (user) {
+    // update
+    return authRepo.findByIdAndUpdateDocument(
+      user.id,
+      {
+        firstName,
+        lastName,
+        email,
+        profilePicture,
+        googleSub,
+      },
+      { newL: true },
+    );
+  } else {
+    // create
+    return authRepo.createOneDocument({
+      firstName,
+      lastName,
+      password: passwordDummy,
+      isVerifyAcount: true,
+      email,
+      profilePicture,
+      googleSub,
+      providers: providersEnum.GOOGLE,
+    });
+  }
+};
+
+export const googleRegister = async (googleToken) => {
+  const googleTokenPayload = await VerifyGoogleToken(googleToken);
+
+  if (!googleTokenPayload || !googleTokenPayload.email_verified) {
+    throw new UnauthorizedException("Invalid Google account verification.", {
+      error: "GOOGLE_ACCOUNT_NOT_VERI FIED",
+    });
+  }
+
+  const isExist = await authRepo.findOneDocument({
+    email: googleTokenPayload.email,
+  });
+  if (isExist) {
+    throw new ConflictException("Email already exists", {
+      error: "Email Conflict",
+    });
+  }
+
+  const user = await authRepo.findOneDocument({
+    googleSub: googleTokenPayload.sub,
+    providers: providersEnum.GOOGLE,
+  });
+
+  const handelUser = updateOrcreateUser(user, googleTokenPayload);
+
+  return buildToken(handelUser);
+};
+
+export const googleLogin = async (googleToken) => {
+  const googleTokenPayload = await VerifyGoogleToken(googleToken);
+
+  if (!googleTokenPayload || !googleTokenPayload.email_verified) {
+    throw new UnauthorizedException("Invalid Google account verification.", {
+      error: "GOOGLE_ACCOUNT_NOT_VERI FIED",
+    });
+  }
+
+  const user = await authRepo.findOneDocument({
+    googleSub: googleTokenPayload.sub,
+    providers: providersEnum.GOOGLE,
+  });
+
+  if (!user) {
+    throw new NotFoundException("Google account is not registered", {
+      field: "googleSub",
+      code: "GOOGLE_ACCOUNT_NOT_FOUND",
+      message: "No account is associated with this Google account.",
+      suggestion: "Please sign up first.",
+    });
+  }
+
+  return buildToken(user);
 };

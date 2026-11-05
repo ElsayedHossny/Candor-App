@@ -23,3 +23,14 @@ export const normalizedExt = {
   jpeg: "jpg",
   jpe: "jpg",
 };
+
+export const providersEnum = {
+  SYSTEM: "system",
+  GOOGLE: "google",
+};
+
+export const TypeSenderReceiverEnum = {
+  RECEIVER: "0",
+  SENDER: "1",
+  BOTH: "2",
+};

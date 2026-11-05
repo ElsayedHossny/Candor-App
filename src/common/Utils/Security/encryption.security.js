@@ -18,17 +18,19 @@ export const encryptionSymmetric = (plaintext) => {
 };
 
 export const decryptionSymmetric = (IvCipher) => {
-  const [iv, chipertext] = IvCipher.split(":");
-  const IvBuffer = Buffer.from(iv, "hex");
+  if (IvCipher) {
+    const [iv, chipertext] = IvCipher.split(":");
+    const IvBuffer = Buffer.from(iv, "hex");
 
-  const plaintext = crypto.createDecipheriv(
-    "aes-256-cbc",
-    ENCRYPTION_KEY,
-    IvBuffer,
-  );
+    const plaintext = crypto.createDecipheriv(
+      "aes-256-cbc",
+      ENCRYPTION_KEY,
+      IvBuffer,
+    );
 
-  let decrypt = plaintext.update(chipertext, "hex", "utf-8");
-  decrypt += plaintext.final("utf-8");
+    let decrypt = plaintext.update(chipertext, "hex", "utf-8");
+    decrypt += plaintext.final("utf-8");
 
-  return decrypt;
+    return decrypt;
+  }
 };

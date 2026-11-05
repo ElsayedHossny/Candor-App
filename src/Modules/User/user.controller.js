@@ -5,6 +5,8 @@ import { authorization } from "../../Middleware/authorization.middleware.js";
 import { roleEnum } from "../../common/constants.js";
 import { multerUpload } from "../../Middleware/multer.middleware.js";
 import { multerValidation } from "../../Middleware/multerValidation.middleware.js";
+import { ValidationMiddleWare } from "../../Middleware/validation.middleware.js";
+import { userPagenation } from "./user.validation.js";
 
 const userRouter = Router();
 
@@ -48,21 +50,16 @@ userRouter.get(
     res.json({ message: "User Profile", result });
   },
 );
-
+//authorization([roleEnum.ADMIN]),
 userRouter.get(
   "/alluserprofiles",
   authentication,
-  authorization([roleEnum.ADMIN]),
+  ValidationMiddleWare(userPagenation),
   async (req, res, next) => {
-    const result = await userServices.findAllUsers();
+    const result = await userServices.findAllUsers(req.validate.query);
     res.json({ message: "all User Profile", result });
   },
 );
-
-// fields([
-//     { name: "image", maxCount: 1 },
-//     { name: "image2", maxCount: 2 },
-//   ])
 
 userRouter.post(
   "/profile-picture",
@@ -83,7 +80,10 @@ userRouter.post(
 
 userRouter.post(
   "/upload",
-  multerUpload({ desiredPath: "Covers" }).single("image"),
+  multerUpload({ desiredPath: "Covers" }).fields([
+    { name: "image", maxCount: 1 },
+    { name: "image2", maxCount: 2 },
+  ]),
   multerValidation,
   async (req, res, next) => {
     const files = req.files ?? req.file;

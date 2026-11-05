@@ -7,11 +7,14 @@ import {
 import UserRepository from "../../DB/Repositories/user.repository.js";
 import { roleEnum, TokenTypeEnum } from "../constants.js";
 import { getRedis } from "../Services/redis.service.js";
+import { OAuth2Client } from "google-auth-library";
+
+const userRepo = new UserRepository();
 
 const { user: userEnvConfig, admin: adminEnvConfig } = envConfig.jwt;
 
-const userRepo = new UserRepository();
 // why we use functions single source of truth
+
 export const generateToken = (payload, secret, options) => {
   return jwt.sign(payload, secret, options);
 };
@@ -20,14 +23,41 @@ export const verifyToken = (token, secret, options) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////
 
+export const VerifyGoogleToken = async (token) => {
+  const client = new OAuth2Client();
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: envConfig.google.clientId,
+  });
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new BadRequestException("Invalid token payload", {
+      field: "role",
+      reason: "Missing required claim",
+    });
+  }
+
+  return payload;
+};
+
+export const decodeTokenOnly = (token, options) => {
+  const decodeToken = jwt.decode(token, options);
+
+  if (!decodeToken) {
+    throw new BadRequestException("Invalid token payload", {
+      field: "role",
+      reason: "Missing required claim",
+    });
+  }
+  return decodeToken;
+};
+
 export const decodeToken = async (
   token,
   options,
   tokenType = TokenTypeEnum.ACCESS,
 ) => {
   const decodeToken = jwt.decode(token, options);
-
-  // console.log("tokenType", tokenType);
 
   if (!decodeToken || !decodeToken.role) {
     throw new BadRequestException("Invalid token payload", {

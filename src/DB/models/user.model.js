@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { genderEnum, roleEnum } from "../../common/constants.js";
+import { genderEnum, providersEnum, roleEnum } from "../../common/constants.js";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -31,12 +31,12 @@ const UserSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: Object.values(genderEnum),
-      default: "other",
+      default: genderEnum.MALE,
     },
     age: {
       type: Number,
-      min: [3, "Age must be at least 18"],
-      max: [30, "Age must be at least 100"],
+      min: [18, "Age must be at least 18"],
+      max: [100, "Age must be at most 100"],
     },
     profilePicture: String,
     phone: String,
@@ -48,6 +48,22 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(roleEnum),
       default: "user",
+    },
+    googleSub: {
+      type: String,
+      default: null,
+      index: {
+        name: "google-sub-unique",
+        unique: true,
+        partialFilterExpression: {
+          googleSub: { $type: "string" },
+        },
+      },
+    },
+    providers: {
+      type: String,
+      enum: Object.values(providersEnum),
+      default: providersEnum.SYSTEM,
     },
   },
   {

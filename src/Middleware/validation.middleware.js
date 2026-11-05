@@ -11,9 +11,11 @@ export const ValidationMiddleWare = (schema) => {
     // const validationResult = schema.safeParse(req.body);
 
     if (!validationResult.success) {
-      throw new BadRequestException(
-        "Validation Schema",
-        validationResult.error.issues,
+      return next(
+        new BadRequestException(
+          "Validation Schema",
+          validationResult.error.issues,
+        ),
       );
     }
 

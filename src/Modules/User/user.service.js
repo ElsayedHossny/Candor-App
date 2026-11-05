@@ -1,6 +1,7 @@
 import UserRepository from "../../DB/Repositories/user.repository.js";
 import { NotFoundException } from "../../common/Utils/Error/exception.error.js";
 import { decryptionSymmetric } from "../../common/Utils/Security/encryption.security.js";
+import { pagenation } from "../../common/Utils/pagenation.js";
 
 /** 
 updateOne => return modifiedCount 
@@ -53,13 +54,20 @@ export const findProfileById = async (userId) => {
   return user;
 };
 
-export const findAllUsers = async (userId) => {
-  const users = await userRepo.findAllDocuments();
+export const findAllUsers = async (query) => {
+  const { page, limit } = query;
+
+  const { pagenate, skip } = await pagenation(userRepo, page, limit);
+  const users = await userRepo.findAllDocuments({}, { limit, skip });
+
   users.map((user) => {
     const { phone } = user;
     const phoneDecrypt = decryptionSymmetric(phone);
     user.phone = phoneDecrypt;
   });
 
-  return users;
+  return {
+    users,
+    pagenate,
+  };
 };

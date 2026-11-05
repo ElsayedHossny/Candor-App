@@ -36,4 +36,7 @@ export const envConfig = {
     senderPasswordOtp: process.env.ADMIN_PASSWORD_EMAIL_SENDING_OTP,
   },
   originDomains: process.env.ORIGINACCESS.split(","),
+  google: {
+    clientId: process.env.WEB_GOOGLE_CLIENT_ID,
+  },
 };

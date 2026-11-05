@@ -11,6 +11,8 @@ authRouter.post(
   "/signup",
   ValidationMiddleWare(register),
   async (req, res, next) => {
+    console.log(req.validate.body);
+
     const result = await authServices.registerUser(req.validate.body);
     res
       .status(201)
@@ -77,7 +79,8 @@ authRouter.get("/verify-email", async (req, res, next) => {
 /*
 1- forget password
 2- reset password
- */
+*/
+
 authRouter.get("/forgetPassword", async (req, res, next) => {
   const { email } = req.body;
   const result = await authServices.forgetPassword(email);
@@ -87,6 +90,7 @@ authRouter.get("/forgetPassword", async (req, res, next) => {
     result: result,
   });
 });
+
 authRouter.post("/resetPassword", async (req, res, next) => {
   const { email, otp, password } = req.body;
   const result = await authServices.resetPassword(email, otp, password);
@@ -96,7 +100,8 @@ authRouter.post("/resetPassword", async (req, res, next) => {
     result: result,
   });
 });
-//// reset OTP
+
+// reset OTP
 authRouter.get("/resetOTP", async (req, res, next) => {
   const { email } = req.body;
   const result = await authServices.resetOTP(email);
@@ -117,9 +122,7 @@ authRouter.post(
     const { result, token } = await authServices.userLoginOnly(
       req.validate.body,
     );
-
     // console.log(result);
-
     res.status(200).json({
       message: "User login successfully",
       userName: result.fullName,
@@ -134,13 +137,10 @@ authRouter.post(
   ValidationMiddleWare(login),
   async (req, res, next) => {
     // console.log(req.validate);
-
     const { result, token } = await authServices.adminLoginOnly(
       req.validate.body,
     );
-
     // console.log(result);
-
     res.status(200).json({
       message: "User login successfully",
       userName: result.fullName,
@@ -154,6 +154,26 @@ authRouter.post("/sendmail", async (req, res, next) => {
   res.status(200).json({
     message: "Sended Email Successfully",
     result: x,
+  });
+});
+
+////////////////////////////////////////////////////////////////////////////////////
+
+authRouter.post("/gmail/register", async (req, res, next) => {
+  const { idToken } = req.body;
+  const result = await authServices.googleRegister(idToken);
+  res.status(200).json({
+    message: "Google register successful.",
+    result,
+  });
+});
+
+authRouter.post("/gmail/login", async (req, res, next) => {
+  const { idToken } = req.body;
+  const result = await authServices.googleLogin(idToken);
+  res.status(200).json({
+    message: "Google login successful.",
+    result,
   });
 });
 

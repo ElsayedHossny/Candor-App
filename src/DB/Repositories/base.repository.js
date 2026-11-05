@@ -42,8 +42,19 @@ export default class BaseRepository {
     return this.model.findOne(filters);
   }
 
-  findAllDocuments(filters = {}) {
-    return this.model.find(filters);
+  findAllDocuments(filters = {}, options = {}) {
+    if (options.populate) {
+      return this.model
+        .find(filters)
+        .populate(options.populate || [])
+        .limit(options.limit)
+        .skip(options.skip);
+    }
+    return this.model.find(filters).limit(options.limit).skip(options.skip);
+  }
+
+  countOfDocuments(filters = {}) {
+    return this.model.countDocuments(filters);
   }
 
   // UPDATE

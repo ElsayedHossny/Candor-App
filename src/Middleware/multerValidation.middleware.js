@@ -3,6 +3,8 @@ import { BadRequestException } from "../common/Utils/Error/exception.error.js";
 import { normalizedExt } from "../common/constants.js";
 import fs from "node:fs";
 
+// Magic_Number
+
 export const multerValidation = async (req, res, next) => {
   const files = normalizeFilesOutput(req);
   for (const field in files) {
@@ -42,6 +44,7 @@ const normalizeFilesOutput = (req) => {
 };
 const FileChecking = async (file) => {
   let { ext: originExt, mime: originMime } = await fileTypeFromFile(file.path);
+  /// updated...........................
   let storedExt = file.originalname.split(".").pop().toLowerCase();
   let storedMime = file.mimetype;
   // normalizedExt because jpeg the origin EXT is jpg only
