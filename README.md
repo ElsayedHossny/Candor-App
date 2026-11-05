@@ -22,8 +22,9 @@
 | ODM                         | Mongoose                         |
 | Caching & In-Memory Storage | Redis                            |
 | Authentication              | JWT, Google OAuth                |
-| Validation                  | Zod                              |
+| Validation                  | Zod(Project) + Joi(study)        | 
 | Password Hashing            | Argon2                           |
+| Phone(encryption-decryption)| AES-256-CBC(Symmetric Encryption)|
 | OTP Hashing                 | Bcrypt                           |
 | Cryptography                | Node.js Crypto                   |
 | File Upload                 | Multer                           |
@@ -100,11 +101,12 @@
 
 ### Data Security & Cryptography
 
-- **Argon2:** استخدام Password Hashing لتخزين كلمات المرور بشكل آمن.
-- **Bcrypt:** Hashing وComparison لأكواد OTP.
-- **Phone Encryption & Decryption:** تشفير أرقام الهواتف وفك تشفيرها عند الحاجة لاستخدامها.
-- **Node.js Crypto:** توليد OTP باستخدام `crypto.randomInt()` لضمان استخدام Random Values آمنة تشفيرياً.
-- **Environment Variables:** حماية Secrets وCredentials وعدم تضمينها داخل Source Code.
+- **Argon2:** استخدام Password Hashing لتخزين كلمات المرور بشكل آمن، مع إمكانية التحقق منها دون الحاجة إلى فك تشفيرها.
+- **Bcrypt:** استخدام Hashing وComparison لأكواد OTP.
+- **AES-256-CBC:** تطبيق Symmetric Encryption & Decryption لحماية أرقام الهواتف باستخدام نفس Secret Key.
+- **Initialization Vector (IV):** توليد IV عشوائي باستخدام `crypto.randomBytes()` لكل عملية تشفير.
+- **Node.js Crypto:** استخدام `crypto.randomInt()` لتوليد OTP بأرقام عشوائية آمنة تشفيرياً.
+- **Environment Variables:** تخزين Encryption Key وإعدادات التشفير خارج Source Code.
 
 ---
 
@@ -198,45 +200,6 @@
 
 ---
 
-## ⚙️ Installation & Setup
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/ElsayedHossny/Sarahah-App.git
-```
-
-### 2. Install Dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure Environment Variables
-
-أنشئ ملف `.env` وأضف إعدادات المشروع المطلوبة، مثل:
-
-```env
-PORT=
-MONGO_URI=
-REDIS_URL=
-JWT_SECRET=
-JWT_REFRESH_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-EMAIL_USER=
-EMAIL_PASSWORD=
-```
-
-\<sub>ملاحظة: أسماء المتغيرات هنا نموذجية، ويجب مطابقتها مع أسماء المتغيرات المستخدمة فعلياً في المشروع.\</sub>
-
-### 4. Run Application
-
-```bash
-npm run dev
-```
-
----
 
 ## 👨‍💻 Developer
 
