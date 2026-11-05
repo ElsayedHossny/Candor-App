@@ -1,8 +1,7 @@
 # 🚀 Cander-App | Anonymous Messaging Platform
 
-\<p align="center">
+
 &#x20; A Secure Backend Application for Anonymous Messaging
-\</p>
 
 ## 📌 About The Project
 
