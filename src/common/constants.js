@@ -34,3 +34,9 @@ export const TypeSenderReceiverEnum = {
   SENDER: "1",
   BOTH: "2",
 };
+
+export const requestStatusEnum = {
+  PENDING: "pending",
+  REJECTED: "rejected",
+  ACCEPTED: "accepted",
+};

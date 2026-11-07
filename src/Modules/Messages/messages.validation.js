@@ -5,24 +5,15 @@ const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, {
   message: "Invalid ObjectId",
 });
 
-const messageSchema = z
-  .object({
-    content: z.string().min(3).max(50000).optional(),
+const messageSchema = z.object({
+  content: z.string().min(3).max(50000).optional(),
 
-    attachments: z.array(z.string()).optional(),
+  attachments: z.array(z.string()).optional(),
 
-    senderId: objectIdSchema.optional(),
+  senderId: objectIdSchema.optional(),
 
-    receiverId: objectIdSchema,
-  })
-  .refine(
-    (data) =>
-      Boolean(data.content?.trim()) || (data.attachments?.length ?? 0) > 0,
-    {
-      message: "Message content or attachments is required.",
-      path: ["content"],
-    },
-  );
+  receiverId: objectIdSchema,
+});
 
 export const messageZodSchema = z.object({
   body: messageSchema,

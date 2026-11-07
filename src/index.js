@@ -13,6 +13,7 @@ import { redisConnection } from "./common/Clients/redis.client.js";
 import { EmailConnection } from "./common/Clients/email.client.js";
 import { limiter } from "./Middleware/rate-limit.middleware.js";
 import { RATE_LIMIT_CONFIG } from "./common/rate-limit.constant.js";
+import requestRouter from "./Modules/Requests/requests.controller.js";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
+app.use("/api/request", requestRouter);
 
 // handle Router Not Found
 app.use((req, res) => {
