@@ -38,7 +38,14 @@ export default class BaseRepository {
     return this.model.findById(_id);
   }
 
-  findOneDocument(filters = {}) {
+  findOneDocument(filters = {}, options = {}) {
+    if (options.populate) {
+      return this.model
+        .findOne(filters)
+        .populate(options.populate || [])
+        .limit(options.limit)
+        .skip(options.skip);
+    }
     return this.model.findOne(filters);
   }
 

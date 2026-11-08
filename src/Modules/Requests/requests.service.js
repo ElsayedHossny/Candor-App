@@ -8,12 +8,14 @@ import MessageRepository from "../../DB/Repositories/messages.repository.js";
 import RequestRepository from "../../DB/Repositories/requests.repository.js";
 import UserRepository from "../../DB/Repositories/user.repository.js";
 import { pagenation } from "../../common/Utils/pagenation.js";
+import ConversationRepository from "../../DB/Repositories/conversations.repository.js";
 
 const messageRepo = new MessageRepository();
 const requestRepo = new RequestRepository();
 const userRepo = new UserRepository();
+const ConvRepo = new ConversationRepository();
 
-export const test = (re) => {
+export const test = () => {
   return "Hellooooo test request ";
 };
 
@@ -127,9 +129,6 @@ export const acceptedRejectedRequests = async (userId, requestId, status) => {
     });
   }
 
-  console.log(request.requestStatus);
-  console.log(requestStatusEnum.PENDING);
-
   // 3. Check current status
   if (request.requestStatus !== requestStatusEnum.PENDING) {
     throw new BadRequestException("Request already processed", {
@@ -148,10 +147,16 @@ export const acceptedRejectedRequests = async (userId, requestId, status) => {
       { requestStatus: requestStatusEnum.ACCEPTED },
       { new: true },
     );
+    const conversation = await ConvRepo.createOneDocument({
+      participants: [request.senderId, request.receiverId],
+      requestId: request._id,
+      originalMessageId: request.messageId,
+    });
 
     return {
       message: "Request accepted successfully",
       result,
+      conversation,
     };
   }
 

@@ -14,6 +14,7 @@ import { EmailConnection } from "./common/Clients/email.client.js";
 import { limiter } from "./Middleware/rate-limit.middleware.js";
 import { RATE_LIMIT_CONFIG } from "./common/rate-limit.constant.js";
 import requestRouter from "./Modules/Requests/requests.controller.js";
+import conversationRouter from "./Modules/Conversations/conversation.controller.js";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/request", requestRouter);
+app.use("/api/conversation", conversationRouter);
 
 // handle Router Not Found
 app.use((req, res) => {
