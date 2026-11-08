@@ -15,6 +15,7 @@ import { limiter } from "./Middleware/rate-limit.middleware.js";
 import { RATE_LIMIT_CONFIG } from "./common/rate-limit.constant.js";
 import requestRouter from "./Modules/Requests/requests.controller.js";
 import conversationRouter from "./Modules/Conversations/conversation.controller.js";
+import privateConversationRouter from "./Modules/PrivateConversation/privateConversation.controller.js";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/request", requestRouter);
 app.use("/api/conversation", conversationRouter);
+app.use("/api/private-conversation", privateConversationRouter);
 
 // handle Router Not Found
 app.use((req, res) => {

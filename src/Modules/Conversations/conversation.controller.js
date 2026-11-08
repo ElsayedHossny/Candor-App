@@ -45,7 +45,7 @@ conversationRouter.get(
     });
   },
 );
-// get one conversation
+// get one conversation By Id
 conversationRouter.get(
   "/:conversationId",
   authentication,
