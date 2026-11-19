@@ -87,7 +87,7 @@ userRouter.post(
   multerValidation,
   async (req, res, next) => {
     const files = req.files ?? req.file;
-    console.log(files);
+    // console.log(files);
 
     res.json({
       message: "uploaded sucessfully",

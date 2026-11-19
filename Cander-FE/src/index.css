@@ -1,0 +1,234 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ========================================
+   LIGHT MODE - Baby Blue & Cloud Blue
+======================================== */
+
+:root {
+  color-scheme: light;
+
+  --radius: 0.75rem;
+
+  --background: #F2F8FC;
+  --foreground: #29445A;
+
+  --card: #FFFFFF;
+  --card-foreground: #29445A;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #29445A;
+
+  --primary: #78B7D5;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #E2F0F8;
+  --secondary-foreground: #416E8A;
+
+  --muted: #E8F1F6;
+  --muted-foreground: #71899A;
+
+  --accent: #D7EAF5;
+  --accent-foreground: #416E8A;
+
+  --destructive: #D66B6B;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #D8E7F0;
+  --input: #D8E7F0;
+  --ring: #78B7D5;
+
+  /* Charts */
+  --chart-1: #78B7D5;
+  --chart-2: #A9D7EB;
+  --chart-3: #416E8A;
+  --chart-4: #9DBBCB;
+  --chart-5: #C1DCEB;
+
+  /* Sidebar */
+  --sidebar: #F2F8FC;
+  --sidebar-foreground: #29445A;
+  --sidebar-primary: #78B7D5;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E2F0F8;
+  --sidebar-accent-foreground: #416E8A;
+  --sidebar-border: #D8E7F0;
+  --sidebar-ring: #78B7D5;
+}
+
+/* ========================================
+   DARK MODE - Deep Blue & Soft Sky
+======================================== */
+
+.dark {
+  color-scheme: dark;
+
+  --background: #304858;
+  --foreground: #F1F7FB;
+
+  --card: #3D596A;
+  --card-foreground: #F1F7FB;
+
+  --popover: #3D596A;
+  --popover-foreground: #F1F7FB;
+
+  --primary: #A9D7EB;
+  --primary-foreground: #294657;
+
+  --secondary: #405E70;
+  --secondary-foreground: #F1F7FB;
+
+  --muted: #3D596A;
+  --muted-foreground: #C6D9E5;
+
+  --accent: #4C687A;
+  --accent-foreground: #F1F7FB;
+
+  --destructive: #E28A8A;
+  --destructive-foreground: #3B4650;
+
+  --border: #597487;
+  --input: #597487;
+  --ring: #A9D7EB;
+
+  /* Charts */
+  --chart-1: #A9D7EB;
+  --chart-2: #78B7D5;
+  --chart-3: #C6E3F0;
+  --chart-4: #82AFC7;
+  --chart-5: #D1E8F3;
+
+  /* Sidebar */
+  --sidebar: #354F60;
+  --sidebar-foreground: #F1F7FB;
+  --sidebar-primary: #A9D7EB;
+  --sidebar-primary-foreground: #294657;
+  --sidebar-accent: #4C687A;
+  --sidebar-accent-foreground: #F1F7FB;
+  --sidebar-border: #597487;
+  --sidebar-ring: #A9D7EB;
+}
+
+/* ========================================
+   THEME MAPPING - Tailwind CSS v4
+======================================== */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ========================================
+   BASE STYLES
+======================================== */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    transition:
+      background-color 250ms ease,
+      color 250ms ease;
+  }
+}
+
+/* ========================================
+   GRID BACKGROUND
+   Light & Dark Mode
+======================================== */
+
+.grid-background {
+  background-color: var(--background);
+
+  background-image:
+    linear-gradient(to right,
+      var(--grid-line) 1px,
+      transparent 1px),
+    linear-gradient(to bottom,
+      var(--grid-line) 1px,
+      transparent 1px),
+    radial-gradient(ellipse at 15% 20%,
+      var(--grid-glow),
+      transparent 65%),
+    radial-gradient(ellipse at 90% 70%,
+      var(--grid-glow-secondary),
+      transparent 60%);
+
+  background-size:
+    48px 48px,
+    48px 48px,
+    auto,
+    auto;
+}
+
+/* Light Grid Colors */
+:root {
+  --grid-line: rgba(120, 183, 213, 0.17);
+  --grid-glow: rgba(169, 215, 235, 0.45);
+  --grid-glow-secondary: rgba(226, 240, 248, 0.75);
+}
+
+/* Dark Grid Colors */
+.dark {
+  --grid-line: rgba(169, 215, 235, 0.15);
+  --grid-glow: rgba(120, 183, 213, 0.20);
+  --grid-glow-secondary: rgba(169, 215, 235, 0.10);
+}
