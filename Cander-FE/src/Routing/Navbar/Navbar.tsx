@@ -53,10 +53,9 @@ const defaultProps: Navbar35Props = {
   },
 };
 
-const menuLinkClass = (isActive: boolean, height: "h-10" = "h-10") =>
+const menuLinkClass = (isActive: boolean) =>
   cn(
-    "inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors",
-    height,
+    "inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors",
     isActive
       ? "border-primary bg-primary text-primary-foreground shadow-sm"
       : "border-border bg-background text-foreground hover:border-primary/40 hover:bg-accent hover:text-accent-foreground",
@@ -126,73 +125,60 @@ const Navbar = ({ className, ...props }: Partial<Navbar35Props>) => {
               Candor App
             </NavLink>
             <Sheet>
-              <SheetTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Menu className="size-4" />
-                  </Button>
-                }
-              />
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Menu className="size-4" />
+                </Button>
+              </SheetTrigger>
               <SheetContent className="overflow-y-auto border-border bg-background text-foreground">
                 <SheetHeader>
                   <SheetTitle>
-                    <SheetClose
-                      nativeButton={false}
-                      render={
-                        <NavLink
-                          to={logo.url}
-                          className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary"
-                        >
-                          Candor App
-                        </NavLink>
-                      }
-                    />
+                    <SheetClose asChild>
+                      <NavLink
+                        to={logo.url}
+                        className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary"
+                      >
+                        Candor App
+                      </NavLink>
+                    </SheetClose>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
                   <div className="flex flex-col gap-3">
-                    {menu.map((item) => {
-                      const link = (
+                    {menu.map((item) => (
+                      <SheetClose key={item.url} asChild>
                         <NavLink
                           to={item.url}
                           end={item.url === "/"}
-                          className={({ isActive }) => menuLinkClass(isActive)}
+                          className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                           {item.title}
                         </NavLink>
-                      );
-
-                      return <SheetClose key={item.url} render={link} />;
-                    })}
+                      </SheetClose>
+                    ))}
                   </div>
-
                   <div className="flex flex-col gap-3">
-                    <SheetClose
-                      nativeButton={false}
-                      render={
-                        <NavLink
-                          to={auth.login.url}
-                          className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                          {auth.login.title}
-                        </NavLink>
-                      }
-                    />
-                    <SheetClose
-                      nativeButton={false}
-                      render={
-                        <NavLink
-                          to={auth.signup.url}
-                          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                        >
-                          {auth.signup.title}
-                        </NavLink>
-                      }
-                    />
+                    <SheetClose asChild>
+                      <NavLink
+                        to={auth.login.url}
+                        className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                      >
+                        {auth.login.title}
+                      </NavLink>
+                    </SheetClose>
+
+                    <SheetClose asChild>
+                      <NavLink
+                        to={auth.signup.url}
+                        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      >
+                        {auth.signup.title}
+                      </NavLink>
+                    </SheetClose>
                   </div>
                 </div>
               </SheetContent>
