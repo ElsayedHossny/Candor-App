@@ -65,7 +65,7 @@ authRouter.post(
 );
 
 // verify-email
-authRouter.get("/verify-email", async (req, res, next) => {
+authRouter.patch("/verify-email", async (req, res, next) => {
   const { email, otp } = req.body;
   const result = await authServices.OTPVerify(email, otp);
   res.status(200).json({

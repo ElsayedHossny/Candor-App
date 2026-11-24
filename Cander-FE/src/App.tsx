@@ -5,11 +5,11 @@ import { RouterProvider } from "react-router/dom";
 import Layout from "./Routing/Layout/Layout";
 import Home from "./Pages/Home/Home";
 import Messages from "./Pages/Messages/Messages";
-import NotFound from "./Handle_Components/NotFound/NotFound";
+import NotFound from "./Pages/NotFound/NotFound";
 import Register from "./Auth/Register/Register";
 import Login from "./Auth/Login/Login";
-import Logout from "./Auth/Logout/Logout";
-
+import { Toaster } from "sonner";
+import VerifyEmail from "./Auth/VerifyEmail/VerifyEmail";
 const router = createBrowserRouter([
   {
     path: "",
@@ -29,12 +29,12 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "login",
-        element: <Login />,
+        path: "verify-email",
+        element: <VerifyEmail />,
       },
       {
-        path: "logout",
-        element: <Logout />,
+        path: "login",
+        element: <Login />,
       },
 
       {
@@ -47,7 +47,8 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="grid-background">
+    <div className=" grid-background">
+      <Toaster position="top-right" richColors />
       <RouterProvider router={router} />
     </div>
   );

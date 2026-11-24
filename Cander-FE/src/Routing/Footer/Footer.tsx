@@ -50,5 +50,5 @@
 // export default Footer;
 
 export default function Footer() {
-  return <div className="mt-96 p-7 bg-green-700"></div>;
+  return <div className=" p-7 bg-green-700"></div>;
 }
