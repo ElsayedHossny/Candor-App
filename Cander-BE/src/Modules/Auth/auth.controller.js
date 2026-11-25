@@ -102,7 +102,7 @@ authRouter.post("/resetPassword", async (req, res, next) => {
 });
 
 // reset OTP
-authRouter.get("/resetOTP", async (req, res, next) => {
+authRouter.post("/resetOTP", async (req, res, next) => {
   const { email } = req.body;
   const result = await authServices.resetOTP(email);
   res.status(200).json({

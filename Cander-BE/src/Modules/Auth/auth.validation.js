@@ -13,7 +13,7 @@ export const registerSchema = loginSchema
     gender: z.literal(["Male", "Female", "other"]),
     age: z.coerce.number().min(16).max(100),
     profilePicture: z.string(),
-    phone: z.string().regex(/^(\+20)?1[0125][0-9]{8}$/, {
+    phone: z.string().regex(/^(\0)?1[0125][0-9]{8}$/, {
       message: "Invalid Egyptian phone number",
     }),
     role: z.literal(Object.values(roleEnum)).default(roleEnum.USER),

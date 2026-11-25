@@ -18,8 +18,15 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { loginService } from "@/Services/auth.service";
 import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "@/Context/token.context";
 
 export default function Login() {
+  const isTokenExist = useContext(AuthContext);
+  if (!isTokenExist) {
+    throw new Error("isTokenExist is not provided");
+  }
+  const { setAccessToken } = isTokenExist;
   const navigate = useNavigate();
 
   const {
@@ -36,8 +43,12 @@ export default function Login() {
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
-      const response = await loginService(data);
-      console.log(response);
+      console.log(data);
+      const { accessToken, refreshToken } = await loginService(data);
+
+      setAccessToken(accessToken);
+      console.log(refreshToken);
+
       toast.success("Login successful");
       navigate("/");
     } catch (error) {

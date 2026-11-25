@@ -20,3 +20,11 @@ export const verifyEmailService = async (data: VerifyFormValues) => {
 
   return response.data;
 };
+
+export const resendOtpService = async ({ email }: { email: string }) => {
+  const response = await axios.post(`${BaseUrl}/auth/resetOTP`, {
+    email,
+  });
+
+  return response.data;
+};

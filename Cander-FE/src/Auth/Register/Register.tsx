@@ -30,8 +30,16 @@ import {
 } from "@/components/ui/select";
 import { RegisterService } from "@/Services/auth.service";
 import axios from "axios";
+import { useContext } from "react";
+import { EmailContext } from "@/Context/auth.context";
 
 export default function Register() {
+  const emailContext = useContext(EmailContext);
+  if (!emailContext) {
+    throw new Error("EmailContext is not provided");
+  }
+  const { setEmailReg } = emailContext;
+
   const navigate = useNavigate();
 
   const {
@@ -67,11 +75,12 @@ export default function Register() {
     };
 
     try {
-      const response = await RegisterService(payload);
-      console.log("Register Response:", response);
+      const { user } = await RegisterService(payload);
+      setEmailReg(user.email);
       toast.success("Registration successful!", {
         duration: 1500,
       });
+
       navigate("/verify-email");
     } catch (error) {
       if (axios.isAxiosError(error)) {
